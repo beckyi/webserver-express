@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://poiemaweb.com/assets/css/ajax.css">
+  </head>
+  <body>
+    <h1>ex02 :: LOAD HTML DATA</h1>
+    <div id="content"></div>
+    <hr />
+    <h1>ex02 :: LOAD JSON DATA</h1>
+    <div id="content2"></div>
+    <h1>ex03 :: LOAD JSONP DATA</h1>
+    <div id="content3"></div>
+    <script>
+      // XMLHttpRequest 객체의 생성
+      const xhr = new XMLHttpRequest();
+      
+      //>>> 1. 손쉬운 데이터 형식은 HTML :: 별도의 작업없이 전송받은 데이터를 DOM에 추가
+      // 비동기 방식으로 Request를 오픈한다
+      xhr.open('GET', 'data/data.html');
+      // Request를 전송한다
+      xhr.send();
+
+      // Event Handler
+      xhr.onreadystatechange = function () {
+        // 서버 응답 완료 && 정상 응답
+        if (xhr.readyState !== XMLHttpRequest.DONE) return;
+
+        if (xhr.status === 200) {
+          console.log(xhr.responseText);
+
+          document.getElementById('content').innerHTML = xhr.responseText;
+        } else {
+          console.log(`[${xhr.status}] : ${xhr.statusText}`);
+        }
+      };
+
+      const xhr2 = new XMLHttpRequest();
+      //>>> 2. jsoon data 직렬화, 역직렬화
+      // 비동기 방식으로 Request를 오픈한다
+      xhr2.open('GET', 'data/data.json');
+
+      // Request를 전송한다
+      xhr2.send();
+
+      xhr2.onreadystatechange = function () {
+        // 서버 응답 완료 && 정상 응답
+        if (xhr2.readyState !== XMLHttpRequest.DONE) return;
+
+        if (xhr2.status === 200) {
+          console.log(xhr2.responseText);
+
+          // Deserializing (String → Object)
+          responseObject = JSON.parse(xhr2.responseText);
+
+          // JSON → HTML String
+          let newContent = '<div id="tours"><h1>Guided Tours</h1><ul>';
+
+          responseObject.tours.forEach(tour => {
+            newContent += `<li class="${tour.region} tour">
+                <h2>${tour.location}</h2>
+                <span class="details">${tour.details}</span>
+                <button class="book">Book Now</button>
+              </li>`;
+          });
+
+          newContent += '</ul></div>';
+
+          document.getElementById('content2').innerHTML = newContent;
+        } else {
+          console.log(`[${xhr2.status}] : ${xhr2.statusText}`);
+        }
+      };
+    </script>
+    <script>
+      //function
+    function showTours(data) {
+      console.log(data); // data: object
+
+      // JSON → HTML String
+      let newContent = `<div id="tours">
+          <h1>Guided Tours</h1>
+        <ul>`;
+
+      data.tours.forEach(tour => {
+        newContent += `<li class="${tour.region} tour">
+            <h2>${tour.location}</h2>
+            <span class="details">${tour.details}</span>
+            <button class="book">Book Now</button>
+          </li>`;
+      });
+
+      newContent += '</ul></div>';
+
+      document.getElementById('content3').innerHTML = newContent;
+    }
+    </script>
+    <script src='https://poiemaweb.com/assets/data/data-jsonp.js'></script>
+  </body>
+</html>
